@@ -15,12 +15,12 @@ to generate this file without the comments in this block.
   [ "arrays"
   , "console"
   , "effect"
+  , "either"
+  , "identity"
+  , "integers"
   , "lists"
-  , "node-readline"
   , "parsing"
   , "prelude"
-  , "psci-support"
-  , "random"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

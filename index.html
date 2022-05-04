@@ -1,0 +1,28 @@
+<html>
+
+<body onLoad="launch()">
+
+<script src="index.js"></script>
+
+<script>
+
+function launch(){
+	_engineRecord = PS.Main.launch();
+}
+
+function doEvaluate() {
+
+	var t = document.getElementById("code").value;
+	var x = PS.Main.parse(_engineRecord)(t)();
+	document.getElementById('status').textContent = x;
+
+}
+</script>
+<input type="text" id="code" onkeyup="doEvaluate()"/>
+
+
+<botton onclick="doEvaluate()"> eval </botton> 
+<div id="status"> </div>
+
+</body>
+</html>

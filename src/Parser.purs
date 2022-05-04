@@ -17,60 +17,88 @@ import Data.Either
 
 import AST
 
--- show
-{-
-instance Show Element where
-  show (Loop l) = show l
-  show (Action a) = show a 
--}
 
 type P a = ParserT String Identity a
 
 -- Dictionary
 tokenParser :: GenTokenParser String Identity
 tokenParser = makeTokenParser $ LanguageDef (unGenLanguageDef emptyDef) {
-  reservedNames = ["every","play"],
-  reservedOpNames = [","]
+  reservedNames = ["every","play."],
+  reservedOpNames = [",","=","+","-","*","/"]
   }
 
--- toNumber $ Int (CONVERTS INT TO NUMBER)
+-- PROGRAM 
+
+
+parsetest :: String -> Either ParseError (List Element)
+parsetest x = do
+    runParser x program
+
+
+program :: P Program
+--listOfActions = sepBy action (reservedOp ",")
+program = sepBy elementChoice (whiteSpace)
+
+
+elementChoice :: P Element
+elementChoice = choice [
+      loopElement,
+      variableGlobal
+]
+
+loopElement :: P Element
+loopElement = do
+  l <- loop
+  pure $ LoopElement l
 
 -- tokenParser
 loop :: P Loop
 loop = do
   reserved "every"
-  n <- naturalOrFloat
+  n <- detNum
   xs <- listOfActions
   pure $ Loop n xs
 
+variableGlobal :: P Element
+variableGlobal = do
+  v <- variable
+  pure $ VariableGlobal v
+
 listOfActions :: P (List Action)
-listOfActions = sepBy action (reservedOp ",")
-
-
-intOrFloat ::P (Either Int Number)
-intOrFloat = do
-  x <- naturalOrFloat
-  pure $ x
-
-
+--listOfActions = sepBy action (reservedOp ",")
+listOfActions = sepBy action (whiteSpace)
 
 action :: P Action
-action = do
+action = choice [
+      playAction,
+      variableAction
+]
+
+playAction :: P Action
+playAction = do
   reserved "play"
+  reservedOp "."
   x <- identifier -- :: P String
-  pure $ Action x
+  pure $ Play x
+
+variableAction :: P Action
+variableAction = do
+  v <- variable
+  pure $ VariableAction v
+
+variable :: P Variable
+variable = do
+  x <- identifier
+  reservedOp "="
+  xs <- detNum
+  pure $ Variable x xs 
 
 
--- program
-parse :: String -> Either ParseError Loop
-parse x = do
-    runParser x loop
+--convert to Number
 
-
-
-
-
-
+naturalOrFloatToNumber :: Either Int Number -> Number
+naturalOrFloatToNumber (Left i) = toNumber i
+naturalOrFloatToNumber (Right n) = n
 
 -- Type Decleration
 
@@ -100,6 +128,9 @@ commaSep1 = tokenParser.commaSep1
 
 decimal :: P Int
 decimal = tokenParser.decimal
+
+detNum :: P Number 
+detNum = naturalOrFloatToNumber <$> tokenParser.naturalOrFloat
 
 dot :: P String
 dot = tokenParser.dot
@@ -157,5 +188,3 @@ symbol = tokenParser.symbol
 
 whiteSpace :: P Unit
 whiteSpace = tokenParser.whiteSpace
-
-
