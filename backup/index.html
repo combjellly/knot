@@ -3,30 +3,22 @@
 <body onload="launch()">
 
 <script src="index.js"></script>
-<script src="WebDirt.js"></script>
-<script src="SampleBank.js"></script>
 
 <script>
 
-function launch(){
-	_engineRecord = PS.Main.launch();
-	_webDirt = PS.Main.launchDirt();
-
-	render();
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function launch(){
+	_engineRecord = PS.Main.launch();
+}
 
 function doEvaluate() {
 	var t = document.getElementById("code").value;
 	var x = PS.Main.parse(_engineRecord)(t)();
 	document.getElementById('status').textContent = x;
 }
-
-function render(){
-	PS.Main.renderStandalone(_engineRecord)();
-	setTimeout(render, 250)
-}
-
 
 </script>
 <input type="text" id="code" onkeyup="doEvaluate()"/>

@@ -12,15 +12,14 @@ to generate this file without the comments in this block.
 -}
 { name = "my-project"
 , dependencies =
-  [ "arrays"
+  [ "aff"
   , "console"
+  , "datetime"
   , "effect"
-  , "either"
-  , "identity"
-  , "integers"
-  , "lists"
+  , "now"
   , "parsing"
   , "prelude"
+  , "purescript-webdirt"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
